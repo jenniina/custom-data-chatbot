@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Administrator sign-in{% endblock %}
+{% block content %}
+<h1>Administrator sign-in</h1>
+<p>Readers can <a href="{% url 'chat' %}">use the chatbot</a> without signing in.</p>
+<form method="post">{% csrf_token %}
+{% include "fields.html" %}
+<input type="hidden" name="next" value="{{ next }}">
+<button type="submit">Sign in</button>
+</form>
+{% endblock %}

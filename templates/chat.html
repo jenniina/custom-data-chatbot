@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load chat_format %}
+{% block content %}
+<h1>{{ presentation.title }}</h1>
+{% if presentation.caption %}<p class="intro">{{ presentation.caption }}</p>{% endif %}
+{% if presentation.explanation %}<div class="prose">{{ presentation.explanation|linebreaksbr }}</div>{% endif %}
+{% if not has_documents %}<p class="notice">The administrator has not added any documents yet.{% if user.is_staff %} <a href="{% url 'convert' %}">Add a document</a>.{% endif %}</p>{% endif %}
+{% if history %}
+<section aria-labelledby="conversation-heading">
+<h2 id="conversation-heading">Conversation</h2>
+<div class="conversation">
+{% for message in history %}
+<article class="message {{ message.role }}">
+  <h3>{% if message.role == 'user' %}You{% else %}Chatbot{% endif %}</h3>
+  <div class="prose" lang="{{ message.language|default:'en' }}" {% if forloop.last %}id="latest-answer" tabindex="-1"{% endif %}>{% if message.role == 'assistant' %}{{ message.content|assistant_markdown }}{% else %}{{ message.content|linebreaksbr }}{% endif %}</div>
+  {% if user.is_staff and message.sources %}
+  <details><summary>Retrieved sources (administrator only)</summary>
+    {% for source in message.sources %}<article><h4>{{ source.source }} · {{ source.section }}</h4><p>{{ source.location }}</p><div class="prose">{{ source.text|linebreaksbr }}</div></article>{% endfor %}
+  </details>
+  {% endif %}
+</article>
+{% endfor %}
+</div>
+<form method="post" action="{% url 'clear_chat' %}">{% csrf_token %}<button class="secondary">Clear conversation</button></form>
+</section>
+{% endif %}
+<section aria-labelledby="ask-heading">
+<h2 id="ask-heading">Ask a question</h2>
+<p id="question-help">Ask in Finnish or English. Use Send question, or press Enter to send and Shift+Enter for a new line.</p>
+<form method="post" data-busy="Searching the documents and preparing your answer…" id="question-form">
+  {% csrf_token %}
+  {% include "fields.html" %}
+  <button type="submit" {% if not has_documents %}disabled{% endif %}>Send question</button>
+  <p role="status" class="busy-status" hidden></p>
+</form>
+</section>
+{% endblock %}

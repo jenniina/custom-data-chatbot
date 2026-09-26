@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}My library{% endblock %}
+{% block content %}
+<h1>My library</h1>
+<p>These documents are used to answer questions from all visitors.</p>
+<a class="button" href="{% url 'convert' %}">Add a document</a>
+<h2>Published documents</h2>
+<ul class="document-list">
+{% for id, source, model in documents %}
+<li><span>{{ source }}</span> <a href="{% url 'remove' id %}">Remove <span class="sr-only">{{ source }}</span></a></li>
+{% empty %}<li>No documents have been added yet.</li>{% endfor %}
+</ul>
+<p>Importing the same document does not duplicate it. An edited Word file creates a new document; remove the older version when replacing it. OneDrive edits do not update this library automatically.</p>
+{% endblock %}

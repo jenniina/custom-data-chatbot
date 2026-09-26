@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Review document{% endblock %}
+{% block content %}
+<h1>Review document</h1>
+<p><strong>{{ document.source }}</strong> · {{ document.chunks|length }} searchable passages</p>
+<p>Adding this document sends its extracted text to OpenAI to create search embeddings. API charges apply. Visitors will be able to ask about this information.</p>
+<form method="post" data-busy="Adding the document to your chatbot…">
+{% csrf_token %}<input type="hidden" name="preview_id" value="{{ preview_id }}">
+<button type="submit">Add to chatbot library</button><p role="status" class="busy-status" hidden></p>
+</form>
+<p><a href="{% url 'download' preview_id %}">Download JSON (optional)</a> · <a href="{% url 'convert' %}">Choose another document</a></p>
+{% if document.records %}
+<details><summary>Review separated languages</summary>
+{% for record in document.records %}
+<article>
+<h2>{{ record.section }}</h2>
+<p>{{ record.key|default:record.location }}</p>
+{% if record.en %}<h3>English</h3><p class="prose" lang="en">{{ record.en|linebreaksbr }}</p>{% endif %}
+{% if record.fi %}<h3 lang="fi">Suomi</h3><p class="prose" lang="fi">{{ record.fi|linebreaksbr }}</p>{% endif %}
+{% if record.shared %}<h3>Unlabelled text</h3><p class="prose">{{ record.shared|linebreaksbr }}</p>{% endif %}
+</article>
+{% endfor %}
+</details>
+{% endif %}
+<section aria-labelledby="text-heading">
+<h2 id="text-heading">Extracted text</h2>
+{% for chunk in document.chunks %}
+<article><h3>{{ chunk.section }}</h3><p>{{ chunk.location }}</p><div class="prose">{{ chunk.text|linebreaksbr }}</div></article>
+{% endfor %}
+</section>
+{% endblock %}

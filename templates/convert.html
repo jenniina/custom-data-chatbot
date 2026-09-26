@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Convert or import{% endblock %}
+{% block content %}
+<h1>Convert or import a document</h1>
+<p>Load your file, review the extracted text, then add it directly to the chatbot. Downloading JSON is optional.</p>
+<p>Plain Finnish, plain English and bilingual Word documents are supported. No special headings are required. Explicit EN: and FI: pairs are separated; unlabelled text is preserved without guessing or translating.</p>
+<p>Conversion reads body paragraphs and tables. Images, text boxes, headers, footers, comments and footnotes are not included.</p>
+<section aria-labelledby="upload-heading">
+<h2 id="upload-heading">Upload from your computer</h2>
+<form method="post" enctype="multipart/form-data" data-busy="Reading your document…">
+{% csrf_token %}<input type="hidden" name="action" value="upload">
+{% include "fields.html" with form=upload_form %}
+<button type="submit">Review document</button><p role="status" class="busy-status" hidden></p>
+</form>
+</section>
+<section aria-labelledby="link-heading">
+<h2 id="link-heading">Import a public OneDrive file</h2>
+<p>Use an “Anyone with the link” sharing link with downloads allowed. Anyone with that link can access the original file.</p>
+<form method="post" data-busy="Downloading your OneDrive document…">
+{% csrf_token %}<input type="hidden" name="action" value="link">
+{% include "fields.html" with form=link_form %}
+<button type="submit">Review OneDrive document</button><p role="status" class="busy-status" hidden></p>
+</form>
+{% if private_drive_enabled %}<p><a href="{% url 'onedrive' %}">Connect to a private OneDrive file instead</a></p>{% endif %}
+</section>
+{% endblock %}

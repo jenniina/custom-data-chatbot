@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Private OneDrive connection{% endblock %}
+{% block content %}
+<h1>Private OneDrive connection</h1>
+{% if not enabled %}
+<p>Set ONEDRIVE_CLIENT_ID on the server to enable Microsoft sign-in. You can also <a href="{% url 'convert' %}">upload a file or use a public link</a>.</p>
+{% else %}
+<p>This connection has read-only access. Microsoft tokens are stored in your private server-side session until you disconnect, sign out or the session expires.</p>
+{% if connected %}
+<p class="notice">OneDrive connected.</p>
+<form method="post" data-busy="Reading your OneDrive document…">
+{% csrf_token %}<input type="hidden" name="action" value="load">
+{% include "fields.html" %}<button>Review private document</button><p role="status" class="busy-status" hidden></p>
+</form>
+{% else %}
+{% if form.non_field_errors %}<div role="alert">{{ form.non_field_errors }}</div>{% endif %}
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="connect"><button>Connect OneDrive</button></form>
+{% if flow %}
+<p>Open <a href="https://microsoft.com/devicelogin" target="_blank" rel="noopener noreferrer">Microsoft sign-in (opens a new tab)</a>, enter this code and sign in:</p>
+<p><strong>{{ flow.user_code }}</strong></p>
+<form method="post">{% csrf_token %}<input type="hidden" name="action" value="poll"><button>I have completed Microsoft sign-in</button></form>
+{% endif %}
+{% endif %}
+{% if connected or flow %}<form method="post">{% csrf_token %}<input type="hidden" name="action" value="disconnect"><button class="secondary">Disconnect OneDrive</button></form>{% endif %}
+{% endif %}
+{% endblock %}

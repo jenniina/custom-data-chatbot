@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Remove document{% endblock %}
+{% block content %}
+<h1>Remove document?</h1>
+<p><strong>{{ document.1 }}</strong> will no longer be used in future searches. Existing answers in other visitors’ conversations will remain until those conversations expire or are cleared.</p>
+<form method="post">{% csrf_token %}<button class="danger">Confirm removal</button> <a href="{% url 'library' %}">Cancel removal</a></form>
+{% endblock %}

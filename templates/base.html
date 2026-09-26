@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ presentation.title }}{% endblock %} · Context Me</title>
+  <link rel="stylesheet" href="{% static 'site.css' %}">
+  <script src="{% static 'site.js' %}" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="site-header">
+  <a class="brand" href="{% url 'chat' %}">{{ presentation.title }}</a>
+  <details class="menu">
+    <summary>Menu</summary>
+    <nav aria-label="Main navigation">
+      <a href="{% url 'chat' %}" {% if request.resolver_match.url_name == 'chat' %}aria-current="page"{% endif %}>Chat</a>
+      {% if user.is_staff %}
+      <a href="{% url 'library' %}" {% if request.resolver_match.url_name == 'library' %}aria-current="page"{% endif %}>My library</a>
+      <a href="{% url 'convert' %}" {% if request.resolver_match.url_name == 'convert' %}aria-current="page"{% endif %}>Convert or import</a>
+      <a href="{% url 'appearance' %}" {% if request.resolver_match.url_name == 'appearance' %}aria-current="page"{% endif %}>Appearance</a>
+      <form action="{% url 'logout' %}" method="post">{% csrf_token %}<button type="submit" class="secondary">Sign out</button></form>
+      {% else %}
+      <a href="{% url 'login' %}">Administrator sign-in</a>
+      {% endif %}
+    </nav>
+  </details>
+</header>
+<main id="main" tabindex="-1">
+  {% if messages %}<div class="notices" role="status">{% for message in messages %}<p class="notice {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer>
+  <p>Questions, recent conversation and matching document passages are sent to OpenAI. Answers may be incomplete; check important details.</p>
+  <p>Conversations expire after one hour. Use Clear conversation to remove this browser’s chat history.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Chatbot appearance{% endblock %}
+{% block content %}
+<h1>Chatbot appearance</h1>
+<p>This text is shown to all visitors. Leave the caption or explanation empty to hide it.</p>
+<form method="post">{% csrf_token %}{% include "fields.html" %}<button>Save appearance</button></form>
+{% endblock %}
